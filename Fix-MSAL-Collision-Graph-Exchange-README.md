@@ -41,6 +41,10 @@ This script implements a foolproof "**Golden Path**" authentication sequence:
 5. Standard Microsoft browser login windows will open securely. Complete your MFA as usual.
 6. Done! Both modules will be connected flawlessly in the same session.
 
+## 📸 Demo
+
+![Success Screenshot](./Fix-MSAL-Collision-Graph-Exchange.png)
+
 ## 🛡️ Privacy & Safety
 The test script automatically **masks your email addresses (`***@***.com`)** in its final output testing block. It is completely safe to screenshot and share your successful results online!
 

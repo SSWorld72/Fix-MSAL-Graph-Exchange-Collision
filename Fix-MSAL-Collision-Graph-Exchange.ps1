@@ -41,7 +41,7 @@ if ($PSVersionTable.PSVersion.Major -lt 7) {
     exit
 }
 
-Write-Host "`n============== Connecting Microsoft 365 Services ==============" -ForegroundColor Yellow
+Write-Host "`n============== Connecting Microsoft 365 Services ==============`n" -ForegroundColor Yellow
 
 # 2. Prevent Graph from implicitly auto-loading its MSAL DLL before Exchange.
 # If Microsoft.Graph.Authentication is already loaded in memory, it will break Exchange's initialization.
@@ -54,7 +54,7 @@ if (Get-Module -Name Microsoft.Graph* -ErrorAction SilentlyContinue) {
 $env:EXO_UseWindowsBroker = "false"
 $env:MSAL_FORCE_USERAGENT = "1"
 
-Write-Host " [Exchange] Connecting..." -NoNewline -ForegroundColor Cyan
+Write-Host "`n [Exchange] Connecting...`n" -NoNewline -ForegroundColor Cyan
 
 try {
     # 4. Ensure ExchangeOnlineManagement is installed
@@ -66,12 +66,13 @@ try {
     # 5. Import ExchangeOnlineManagement FIRST
     Import-Module ExchangeOnlineManagement -Force -ErrorAction Stop
 
-    # 5. Connect Exchange WITHOUT `-Credential` param!
-    # Without -UserPrincipalName or -Credential, the module defaults to interactive browser login,
-    # asking you to pick an account. This securely handles modern MFA and gracefully 
-    # sidesteps the WAM NullReferenceException bug in PS7.
+    # 5. Connect Exchange WITHOUT `-Credential` param but WITH `-UserPrincipalName`!
+    # By providing the UPN dynamically, MSAL natively skips the buggy Windows WAM OS picker 
+    # (which throws AADSTS1400011 Native App redirect URI bugs) and correctly jumps straight
+    # to the standard, foolproof Web Browser login!
     
-    Connect-ExchangeOnline -ShowProgress:$false -ShowBanner:$false -ErrorAction Stop
+    $adminUPN = Read-Host "Please enter your Admin Email (UPN) to start Web login"
+    Connect-ExchangeOnline -UserPrincipalName $adminUPN -ShowProgress:$false -ShowBanner:$false -ErrorAction Stop
     
     Write-Host " Connected successfully." -ForegroundColor Green
 }
@@ -80,7 +81,7 @@ catch {
     exit
 }
 
-Write-Host " [Graph]    Connecting..." -NoNewline -ForegroundColor Cyan
+Write-Host "`n [Graph]    Connecting..." -NoNewline -ForegroundColor Cyan
 
 try {
     # 6. Ensure Microsoft.Graph.Authentication is installed
@@ -93,29 +94,30 @@ try {
     Import-Module Microsoft.Graph.Authentication -Force -ErrorAction Stop
     
     # 7. Connect Graph
-    Connect-MgGraph -Scopes "User.Read.All", "Group.Read.All" -ErrorAction Stop
+    Connect-MgGraph -Scopes "User.Read.All", "Group.Read.All" -NoWelcome -ErrorAction Stop
     
-    Write-Host " Connected successfully." -ForegroundColor Green
+    Write-Host "`n Connected successfully." -ForegroundColor Green
 }
 catch {
     Write-Host "`n [Error] Graph connection failed: $($_.Exception.Message)" -ForegroundColor Red
 }
 
-Write-Host "==============================================================`n" -ForegroundColor Yellow
+Write-Host "`n==============================================================`n" -ForegroundColor Yellow
 
 # Test actual cmdlets to prove stability
 try {
     Write-Host " [Test 1] Testing Exchange Cmdlet: Get-Mailbox..." -ForegroundColor Gray
     $mbx = Get-Mailbox -ResultSize 1 -WarningAction SilentlyContinue -ErrorAction Stop
-    Write-Host "  > Found mailbox: $($mbx.PrimarySmtpAddress)`n" -ForegroundColor DarkCyan
+    $maskedMbx = $mbx.PrimarySmtpAddress -replace "(?<=^.{1}).*(?=@)", "***" -replace "(?<=@)[^.]+", "***"
+    Write-Host "  > Found mailbox: $maskedMbx`n" -ForegroundColor DarkCyan
     
     Write-Host " [Test 2] Testing Graph Cmdlet: Get-MgUser..." -ForegroundColor Gray
     $user = Get-MgUser -Top 1 -WarningAction SilentlyContinue -ErrorAction Stop
-    Write-Host "  > Found user:    $($user.UserPrincipalName)`n" -ForegroundColor DarkCyan
+    $maskedUser = $user.UserPrincipalName -replace "(?<=^.{1}).*(?=@)", "***" -replace "(?<=@)[^.]+", "***"
+    Write-Host "  > Found user:    $maskedUser`n" -ForegroundColor DarkCyan
     
     Write-Host " ==============================================================" -ForegroundColor Yellow
     Write-Host " 🎉 Congratulations! Both modules are running perfectly together." -ForegroundColor Green
-    Write-Host " ""insane but very satisfying fix tbh..."" - Github Community`n" -ForegroundColor DarkGray
 }
 catch {
     Write-Host "`n [Error] Cmdlet execution failed: $($_.Exception.Message)" -ForegroundColor Red

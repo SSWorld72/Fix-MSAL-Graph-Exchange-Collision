@@ -46,7 +46,7 @@ This script implements a foolproof "**Golden Path**" authentication sequence:
 ![Success Screenshot](./Fix-MSAL-Collision-Graph-Exchange.png)
 
 ## 🛡️ Privacy & Safety
-The test script automatically **masks your email addresses (`***@***.com`)** in its final output testing block. It is completely safe 到 screenshot 分支和 share your successful results online!
+The test script automatically **masks your email addresses (`***@***.com`)** in its final output testing block.
 
 ---
 *Inspired by the frustrating but rewarding debugging trails discussed in Graph PowerShell GitHub Issues [#3331](https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/3331) 和 [#3394](https://github.com/microsoftgraph/msgraph-sdk-powershell/issues/3394)。*

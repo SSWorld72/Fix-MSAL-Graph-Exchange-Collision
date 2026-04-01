@@ -29,7 +29,7 @@ This script implements a foolproof "**Golden Path**" authentication sequence:
 ## 🛠️ Usage
 
 1. Download or clone this repository.
-2. 開啟 **PowerShell 7** (`pwsh.exe`). If you don't have it, install it via:
+2. Open **PowerShell 7** (`pwsh.exe`). If you don't have it, install it via:
    ```powershell
    winget install Microsoft.PowerShell
    ```

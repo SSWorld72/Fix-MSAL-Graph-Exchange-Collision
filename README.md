@@ -1,6 +1,6 @@
 # Fix MSAL DLL Collision: Microsoft Graph & Exchange Online PowerShell 🚀
 
-  **ultimate, robust workaround** for the widespread MSAL DLL Version Collisions and WAM `RuntimeBroker` `NullReferenceException` crashes when mixing `Microsoft.Graph` 和 `ExchangeOnlineManagement` (v3.4+) modules in the same PowerShell session.
+  **ultimate, robust workaround** for the widespread MSAL DLL Version Collisions and WAM `RuntimeBroker` `NullReferenceException` crashes when mixing `Microsoft.Graph` and `ExchangeOnlineManagement` (v3.4+) modules in the same PowerShell session.
 
 This repository provides a clean, copy-pasteable script that perfectly side-steps all k現在n Microsoft MSAL identity bugs, fully supporting MFA-enforced tenants without throwing errors.
 
@@ -9,7 +9,7 @@ This repository provides a clean, copy-pasteable script that perfectly side-step
 If you've ever tried to script automating both Microsoft 365 Exchange and Entra ID (Graph) together, you've likely hit one of these fatal walls:
 
 1. **The Classic MSAL DLL Collision (PowerShell 5.1)**
-   Because Windows PowerShell 5.1 runs a single AppDomain, whichever module you load first locks its version of `Microsoft.Identity.Client.dll` into memory. When the second module loads, it violently crashes with `Method not found: '... WithBroker ...'` 或 `CouldNotAutoloadMatchingModule`。
+   Because Windows PowerShell 5.1 runs a single AppDomain, whichever module you load first locks its version of `Microsoft.Identity.Client.dll` into memory. When the second module loads, it violently crashes with `Method not found: '... WithBroker ...'` or `CouldNotAutoloadMatchingModule`。
    
 2. **The WAM Broker `NullReferenceException` (PowerShell 7)**
    If you migrate to PowerShell 7 to utilize `.NET Core AssemblyLoadContext` (which correctly isolates the conflicting DLLs), `ExchangeOnlineManagement` V3.4+ introduces a highly-flawed native Web Account Manager (WAM) integration.
